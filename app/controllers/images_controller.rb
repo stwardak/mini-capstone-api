@@ -1,4 +1,6 @@
 class ImagesController < ApplicationController
+  protect_from_forgery with: :exception, unless: -> { request.format.json? }
+  
   def index
     @images = Image.all
     render template: "images/index"
