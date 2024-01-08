@@ -5,7 +5,7 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
   #   assert true
   # end
   test "index" do
-    get "/products.json"
+    get "/products.json", headers: { "Authorization" => "Bearer #{@jwt}" }
     assert_response 200
   
     data = JSON.parse(response.body)
@@ -13,7 +13,8 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
   end
   
   test "show" do
-    get "/products/#{Product.first.id}.json"
+    get "/products/#{Product.first.id}.json", 
+    headers: { "Authorization" => "Bearer #{@jwt}" }
     assert_response 200
   
     data = JSON.parse(response.body)
@@ -22,7 +23,9 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
   test "create" do
     assert_difference "Product.count", 1 do
-      post "/products.json", params: { name: "test product", price: 1, description: "test description", supplier_id: Supplier.first.id }
+      post "/products.json", params: { name: "test product", price: 1, description: "test description", supplier_id: Supplier.first.id },
+      headers: { "Authorization" => "Bearer #{@jwt}" }
+      assert_response 200
     end
   end
 
