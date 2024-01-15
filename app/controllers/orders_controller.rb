@@ -3,21 +3,44 @@ class OrdersController < ApplicationController
 
   def create
     if current_user 
-      product = Product.find_by(id: params[:product_id])
+      # product = Product.find_by(id: params[:product_id])
+      carted_products = CartedProduct.where(user_id: current_user.id, status: "carted")
+    
+      if carted_products.empty?
+        render json: {message: "Your cart is empty."}
+        return
+      end
+
+      subtotal = 0
+      carted_products.each do |carted_product|
+        subtotal += carted_product.product.price * carted_product.quantity
+      end
+
+      tax = subtotal * 0.09
+      total = subtotal + tax
+
+
       @order = Order.new(
         user_id: current_user.id,
-        product_id: product.id, 
-        quantity: params[:quantity],
-        subtotal: product.price,
-        tax: product.tax,
-        total: (product.price + product.tax) * params[:quantity].to_i
+        # product_id: product.id, 
+        # subtotal: product.price,
+        # tax: product.tax,
+        subtotal: subtotal,
+        tax: tax,
+        total: total,
+        # total: (product.price + product.tax) * params[:quantity].to_i
       )
       if @order.save
         # render json: {message: "order submitted"}
+        carted_products.each do |carted_product|
+          carted_product.status = "purchased"
+          carted_product.order_id = @order.id
+          carted_product.save
+        end
         render template: "orders/show"
-     
+
       else
-        render json: {message: "order not submitted"}
+        render json: {message: @order.error.full_message}
       end
     else
       render json: {message: "You must be logged in to place an order."}
@@ -45,3 +68,16 @@ class OrdersController < ApplicationController
   
   end
 end
+
+
+# def create 
+#   @order = Order.new(
+#     user_id: 1,
+#     subtotal: 10,
+#     tax: 10,
+#     total: 10,
+#   )
+#   @order.save!
+#   render :show
+# end
+
