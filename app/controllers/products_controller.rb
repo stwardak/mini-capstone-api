@@ -23,8 +23,15 @@ class ProductsController < ApplicationController
       description: params[:description],
       # supplier_id: params[:supplier_id],
       supplier_id: supplier.id,
+      inventory: params[:inventory]
     )
     if @product.save
+      params[:images].each do |image_url| 
+        Image.create(
+          url: image_url,
+          product_id: @product.id
+        )
+      end
       render template: "products/show"
     else
       render json: {errors: @product.errors.full_messages}, status: :unprocessable_entity

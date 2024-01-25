@@ -30,3 +30,11 @@
 # )
 # product.save
 
+
+
+
+# vvvv adding images
+
+# Product.all.each do |product|
+#   Image.create!(product_id: product.id, url: "https://media.npr.org/assets/img/2023/12/21/gettyimages-1670452045-51383d4a25ee4bc9b87b8d22bc00db5641417e75-s1100-c50.jpg")
+# end
